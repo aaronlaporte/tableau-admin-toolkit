@@ -1,0 +1,9 @@
+username,site_role,auth_setting,full_name
+admin@example.com,SiteAdministratorCreator,ServerDefault,Nomad Admin
+creator.one@example.com,Creator,ServerDefault,Creator One
+creator.two@example.com,Creator,ServerDefault,Creator Two
+viewer.alpha@example.com,Viewer,ServerDefault,Viewer Alpha
+viewer.bravo@example.com,Viewer,ServerDefault,Viewer Bravo
+viewer.charlie@example.com,Viewer,ServerDefault,Viewer Charlie
+viewer.delta@example.com,Viewer,ServerDefault,Viewer Delta
+viewer.echo@example.com,Viewer,ServerDefault,Viewer Echo

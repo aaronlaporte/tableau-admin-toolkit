@@ -1,0 +1,111 @@
+# =============================================================================
+# Tableau Admin Toolkit — Unified Configuration
+# =============================================================================
+#
+# Single file: connection, site definitions, alerts, defaults.
+# Copy per environment:
+#
+#   cp config/tableau.example.yaml config/tableau.yaml
+#
+# Env vars (TABLEAU_SERVER, TABLEAU_PAT_NAME, etc.) override YAML when set,
+# but the YAML is fully self-contained — no .env required.
+
+# ── Connection ──────────────────────────────────────────────────────────
+
+server: https://your-pod.online.tableau.com
+pat_name: your_pat_name
+pat_secret: your_pat_secret
+deployment_target: cloud    # "cloud" or "server"
+api_version: "3.28"
+default_site: default
+
+# ── Standardized Site Template ──────────────────────────────────────────
+#
+# Defined once, applied to every site. The folder structure, publish targets,
+# and group roles are identical across all clients. One-off customizations
+# (extra folders, special permissions) are done manually in Tableau.
+#
+# {site_name} is replaced with the site's name (e.g. "Nomad-01 Admins").
+
+site_defaults:
+  target_workbook_project: "Client Reports/Standard Reports"
+  target_datasource_project: "Data Sources/Billing Ledger"
+  sub_projects:
+    - name: "Data Sources"
+      children:
+        - name: "Billing Ledger"
+    - name: "Client Reports"
+      children:
+        - name: "Executive Reports"
+        - name: "Standard Reports"
+        - name: "Ad Hoc"
+  groups:
+    - name: "{site_name} Admins"
+      minimum_site_role: "SiteAdministratorCreator"
+    - name: "{site_name} Creators"
+      minimum_site_role: "Creator"
+    - name: "{site_name} Viewers"
+      minimum_site_role: "Viewer"
+
+# ── Sites ───────────────────────────────────────────────────────────────
+#
+# Each entry only needs name + content_url. Everything else comes from
+# site_defaults above. Set enabled: false to skip a site.
+#
+# Auth options per site (Cloud PATs are site-scoped — one per site):
+#
+#   auth_method: "pat"  (default)
+#     pat_name / pat_secret — falls back to top-level if not set.
+#
+#   auth_method: "jwt"  (Connected App — no token rotation needed)
+#     jwt_client_id, jwt_secret_id, jwt_secret_value, jwt_username
+#     Create via: Site Settings > Connected Apps > New > Direct Trust
+#
+# Secrets support env var references: os.environ.get("YOUR_VAR")
+
+sites:
+  - name: "Client Alpha"
+    content_url: "clientalpha"
+    # PAT auth (default) — per-site credentials
+    # pat_name: "alpha_pat"
+    # pat_secret: os.environ.get("TABLEAU_PAT_ALPHA")
+
+  - name: "Client Beta"
+    content_url: "clientbeta"
+    # JWT auth — Connected App credentials
+    # auth_method: "jwt"
+    # jwt_client_id: "your-connected-app-client-id"
+    # jwt_secret_id: "your-secret-id"
+    # jwt_secret_value: os.environ.get("TABLEAU_JWT_SECRET_BETA")
+    # jwt_username: "admin@example.com"
+
+  - name: "Retired Client"
+    content_url: "retiredclient"
+    enabled: false
+
+# ── Alerts ──────────────────────────────────────────────────────────────
+
+alerts:
+  slack_webhook: https://hooks.slack.com/services/placeholder
+  email_recipients:
+    - bi-team@example.com
+  smtp:
+    host: smtp.example.com
+    port: 587
+    username: tableau-alerts@example.com
+    password: change-me
+    sender: tableau-alerts@example.com
+    use_tls: true
+
+# ── Operational Defaults ────────────────────────────────────────────────
+
+default_project: "Client Reports"
+content_paths:
+  workbooks: ./artifacts/workbooks
+  datasources: ./artifacts/datasources
+extract_defaults:
+  priority: 50
+  notify_on_failure: true
+validation:
+  compare_metric: revenue
+  discrepancy_threshold_pct: 2.0

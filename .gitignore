@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.DS_Store
+
+# Local config files — only the example template is tracked
+config/*.yaml
+!config/tableau.example.yaml
+
+# Migration plan/state and downloaded content from migrate-plan / migrate-execute
+migration_plan.json
+migration_staging/
+
+# Local sample content for tests/nomad_test_scenario.py
+tests/sample_workbooks/
+tests/sample_datasources/

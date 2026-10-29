@@ -1,0 +1,9 @@
+tableau-api-lib>=0.1.2
+tableauserverclient>=0.25
+pydantic[email]>=2.6
+PyYAML>=6.0
+typer>=0.9
+requests>=2.31
+PyJWT>=2.8
+pandas>=2.2
+SQLAlchemy>=2.0
